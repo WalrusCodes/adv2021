@@ -19,17 +19,8 @@ fn read_numbers() -> Vec<usize> {
         .collect()
 }
 
-fn main() {
-    let mut state = State {
-        sum_left: [0; MAX],
-        count_left: [0; MAX],
-        sum_right: [0; MAX],
-        count_right: [0; MAX],
-        count: [0; MAX],
-    };
-    for &num in read_numbers().iter() {
-        state.count[num] += 1;
-    }
+#[allow(unused)]
+fn part1(state: &mut State) {
     // fill in {sum,count}_left
     for idx in 1..MAX {
         state.count_left[idx] = state.count_left[idx - 1] + state.count[idx - 1];
@@ -42,9 +33,48 @@ fn main() {
         state.sum_right[idx] =
             state.sum_right[idx + 1] + state.count[idx + 1] + state.count_right[idx + 1];
     }
-    // part 1: find smallest sum_left + sum_right
+}
+
+fn cost(from: usize, to: usize) -> usize {
+    if from > to {
+        cost(to, from)
+    } else {
+        let diff = to - from;
+        (diff * diff + diff) / 2
+    }
+}
+
+#[allow(unused)]
+fn part2(state: &mut State) {
+    for idx in 0..MAX {
+        if state.count[idx] == 0 {
+            continue;
+        }
+        for idx2 in 0..MAX {
+            state.sum_left[idx2] += state.count[idx] * cost(idx, idx2);
+        }
+    }
+}
+
+fn main() {
+    let mut state = State {
+        sum_left: [0; MAX],
+        count_left: [0; MAX],
+        sum_right: [0; MAX],
+        count_right: [0; MAX],
+        count: [0; MAX],
+    };
+    let mut crab_count = 0usize;
+    for &num in read_numbers().iter() {
+        state.count[num] += 1;
+        crab_count += 1;
+    }
+    dbg!(crab_count);
+    // part1(&mut state);
+    part2(&mut state);
     let min = (0..MAX)
         .map(|idx| state.sum_left[idx] + state.sum_right[idx])
-        .min().unwrap();
+        .min()
+        .unwrap();
     dbg!(&min);
 }
