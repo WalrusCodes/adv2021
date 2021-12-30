@@ -75,6 +75,6 @@ fn main() {
     let path = std::env::args().nth(1).expect("pls provide input file");
     let contents = std::fs::read_to_string(path).expect("read failed");
     let lines: Vec<_> = contents.lines().collect();
-    // part1(&lines);
+    part1(&lines);
     part2(&lines);
 }
