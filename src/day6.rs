@@ -1,6 +1,7 @@
 #[derive(Debug)]
 struct State {
     counts: [usize; 9],
+    phase: usize,
 }
 
 impl State {
@@ -11,15 +12,11 @@ impl State {
             counts[idx] += 1;
         }
 
-        State { counts }
+        State { counts, phase: 0 }
     }
     fn simulate_day(&mut self) {
-        let zero = self.counts[0];
-        for idx in 0..8 {
-            self.counts[idx] = self.counts[idx + 1];
-        }
-        self.counts[8] = zero;
-        self.counts[6] += zero;
+        self.counts[(self.phase + 7) % 9] += self.counts[self.phase];
+        self.phase = (self.phase + 1) % 9;
     }
     fn total(&self) -> usize {
         self.counts.iter().sum()
@@ -35,8 +32,10 @@ fn main() {
         state.simulate_day();
     }
     dbg!(&state, state.total());
+    assert_eq!(state.total(), 385391);
     for _ in 0..(256-80) {  // part 2
         state.simulate_day();
     }
     dbg!(&state, state.total());
+    assert_eq!(state.total(), 1728611055389);
 }
